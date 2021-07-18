@@ -1,0 +1,13 @@
+{% if questionsList %}
+<ul>
+  {% for question in questionsList %}
+  <li>
+    <a href="{% url 'polls:detail' question.id%}"
+      >{{ question.questionText }}</a
+    >
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Np polls are available</p>
+{% endif %}
