@@ -2,3 +2,4 @@
 {% for choice in question.choice_set.all %}
 <h3>{{ choice }} : {{ choice.votes }}</h3>
 {% endfor %}
+<a href={% url 'polls:index' %}>Go to index</a>

@@ -1,5 +1,6 @@
-from django.http.response import Http404, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from .forms import QuestionForm
+from django.http.response import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
@@ -22,10 +23,27 @@ class DetailView(generic.DetailView):
     model = Question
     template_name = "polls/detail.html"
 
+    def get_queryset(self):
+        return Question.objects.filter(publishedDate__lte=timezone.now())
+
 
 class ResultsView(generic.DetailView):
     model = Question
     template_name = 'polls/results.html'
+
+# TODO: create choices for question created via form
+# TODO: write test to ensure no question has zero choices
+
+
+def createQuestion(request):
+    if(request.method == "POST"):
+        form = QuestionForm(request.POST)
+        if(form.is_valid()):
+            form.save()
+            return HttpResponseRedirect(reverse('polls:index'))
+    else:
+        form = QuestionForm()
+        return render(request, 'polls/question.html', {'form': form})
 
 
 def vote(request, questionID):

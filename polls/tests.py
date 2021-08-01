@@ -1,3 +1,4 @@
+from django.http import response
 from django.test import TestCase
 from django.urls.base import reverse
 from django.utils import timezone
@@ -61,3 +62,18 @@ class QuestionIndexViewTests(TestCase):
         q2 = createQuestion("P2", days=-20)
         response = self.client.get(reverse('polls:index'))
         self.assertQuerysetEqual(response.context['questionsList'], [q1, q2])
+
+
+class QuestionDetailViewTests(TestCase):
+    def testFutureQuestion(self):
+        future_question = createQuestion("Future", days=20)
+        url = reverse('polls:detail', args=(future_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def testPastQuestion(self):
+        pastQuestion = createQuestion("Past", -20)
+        url = reverse('polls:detail', args=(pastQuestion.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, pastQuestion.questionText)
